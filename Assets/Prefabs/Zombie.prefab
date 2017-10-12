@@ -921,9 +921,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1203619258187040}
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -19.98, y: -11.561, z: 17.05}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -17.87, y: 8.185647, z: 43.1}
+  m_LocalScale: {x: 1.500001, y: 1.5, z: 1.500001}
   m_Children:
   - {fileID: 4575521856081254}
   - {fileID: 4042515554835118}
@@ -1880,20 +1880,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ff5216c9de378f45ae1b71123666715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  health: 200
   attackRange: 3
   hitRate: 1
   detectionDistance: 12
-  zombieWalkingSpeed: 2
+  zombieWalkingSpeed: 4
   bodyAnimator: {fileID: 95692709566193066}
   zombieWalking: {fileID: 8300000, guid: 7cad94a141f034a61a5f046ad5fb4919, type: 3}
   zombieAttacking: {fileID: 8300000, guid: ab0ec6034559748139b9468598b535d4, type: 3}
-  damage: 25
+  damage: 10
   zombieDeath: {fileID: 8300000, guid: bf648643fe845674384e3571e60a95b4, type: 3}
   zombieBlood: {fileID: 198016619647609324}
   healthBarCanvas: {fileID: 223446484785775238}
   alertDistance: 0
   fov: 0
+  zombieLayer:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &114684676255762924
 MonoBehaviour:
   m_ObjectHideFlags: 1

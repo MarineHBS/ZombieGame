@@ -46,6 +46,7 @@ public class Zombie : MonoBehaviour {
 		maxHealth = health;
 		healthBar = transform.Find ("EnemyCanvas").Find("HealthBar").Find("Health").GetComponent<Image> ();
 		GetComponent<AudioSource> ().clip = zombieWalking;
+		alertDistance = 8;
 	}
 
 	void setZombieAttributes(float actualDistance){
@@ -65,7 +66,22 @@ public class Zombie : MonoBehaviour {
 	}
 
 	void Alerted(){
-
+		Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
+		//StartCoroutine ("Alerted");
+		for(int i = 0; i < zombies.Length; ++i){
+			Zombie z = zombies [i].gameObject.GetComponent<Zombie>();
+			Debug.Log (z.tag + " ALERTED FV " + z.name);
+				if (z.ChasingPlayer()) {
+				if (!SeesPlayer ()) {
+					agent.SetDestination (z.transform.position);
+					agent.speed = zombieWalkingSpeed;
+					bodyAnimator.SetBool ("isWalking", true);
+					bodyAnimator.SetBool ("isAttacking", false);
+					transform.LookAt (z.transform);
+					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+				}
+			}
+		}
 	}
 
 	bool SeesPlayer(){
@@ -75,26 +91,30 @@ public class Zombie : MonoBehaviour {
 
 		if (Physics.Raycast (transform.position, rayDirection, out hit)) {
 			if ((hit.transform.tag == "Player") && (distance < detectionDistance)) {
-				Debug.Log ("közel a blyat");
 				return true;
 			}
 		}
 		Debug.DrawRay ((transform.position + new Vector3(0,0.3f,0)), rayDirection, Color.green);
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
-			Debug.Log ("player inside pov");
 			if (Physics.Raycast ((transform.position + new Vector3(0,0.3f,0)), rayDirection, out hit, 50)) {
 				Debug.Log (hit.transform.tag);
 				if (hit.transform.tag != "Wall") {
-					Debug.Log ("Can see the player");
 					return true;
 				} else {
-					Debug.Log("Can't see the player");
 					return false;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	public bool ChasingPlayer(){
+		if (isChasing) {
+			return true;
+		}
+		return false;
+
 	}
 
 	void Update () {
@@ -224,6 +244,10 @@ public class Zombie : MonoBehaviour {
 
 	IEnumerator DealDamage(){
 		yield return new WaitForSeconds (hitRate);
+	}
+
+	IEnumerator AggroZombies(){
+		yield return new WaitForSeconds (1.0f);
 	}
 
 
