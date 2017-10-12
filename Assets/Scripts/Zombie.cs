@@ -110,7 +110,7 @@ public class Zombie : MonoBehaviour {
 			if (seesPlayer) {
 				Collider[] zombies = Physics.OverlapSphere (transform.position, 20, zombieLayer);
 				for(int i = 0; i < zombies.Length; ++i){
-					zombies[i].SendMessage("Alerted")
+					zombies [i].SendMessage ("Alerted");
 				}
 				Debug.Log (zombies.Length);
 				setZombieAttributes (actualDistance);
