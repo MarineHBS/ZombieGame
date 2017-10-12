@@ -20,6 +20,7 @@ public class Zombie : MonoBehaviour {
 	public Canvas healthBarCanvas;
 	public float alertDistance;
 	public float fov;
+	public LayerMask zombieLayer;
 
 	UnityEngine.AI.NavMeshAgent agent;
 
@@ -31,6 +32,7 @@ public class Zombie : MonoBehaviour {
 	private bool isChasing;
 	private bool isAttacking;
 	private bool isAttacked;
+
 
 
 	void Start () {
@@ -46,7 +48,7 @@ public class Zombie : MonoBehaviour {
 		GetComponent<AudioSource> ().clip = zombieWalking;
 	}
 
-	private void setZombieAttributes(float actualDistance){
+	void setZombieAttributes(float actualDistance){
 		//if (actualDistance <= detectionDistance && actualDistance > attackRange) {
 		if (actualDistance > attackRange) {
 			isChasing = true;
@@ -60,6 +62,10 @@ public class Zombie : MonoBehaviour {
 			isChasing = false;
 			isAttacking = false;
 		}*/
+	}
+
+	void Alerted(){
+
 	}
 
 	bool SeesPlayer(){
@@ -92,9 +98,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	void Update () {
-
 		bool seesPlayer = SeesPlayer ();
-			
 		if(player!= null){
 			healthBarCanvas.transform.LookAt (player);
 		}
@@ -103,8 +107,12 @@ public class Zombie : MonoBehaviour {
 		if (isDead) {
 			return;
 		} else {
-			
 			if (seesPlayer) {
+				Collider[] zombies = Physics.OverlapSphere (transform.position, 20, zombieLayer);
+				for(int i = 0; i < zombies.Length; ++i){
+					zombies[i].SendMessage("Alerted")
+				}
+				Debug.Log (zombies.Length);
 				setZombieAttributes (actualDistance);
 				if (isChasing && !isAttacking) {
 					bodyAnimator.SetBool ("isWalking", true);
