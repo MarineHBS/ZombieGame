@@ -18,8 +18,8 @@ public class Gun : MonoBehaviour {
 	protected virtual void Update (){}	//These methods are overriden
 
 	private void processHit(GameObject hitObject){
-		if (hitObject.GetComponent<Zombie> () != null || hitObject.tag == "Zombie") {
-			hitObject.GetComponent<Zombie> ().TakeDamage (damage);
+		if (hitObject.GetComponentInParent<Zombie> () != null || hitObject.tag == "Zombie") {
+			hitObject.GetComponentInParent<Zombie> ().TakeDamage (damage);
 		}
 	}
 

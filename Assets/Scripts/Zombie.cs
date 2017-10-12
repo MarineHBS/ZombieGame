@@ -27,13 +27,15 @@ public class Zombie : MonoBehaviour {
 	private Transform player;
 	private int maxHealth;
 	private bool isDead;
-	private bool isWalking;
+	private bool isChasing;
 	private bool isAttacking;
 	private bool isAttacked;
+	private float fov;
 
 	void Start () {
+		fov = 30;
 		isDead = false;
-		isWalking = false;
+		isChasing = false;
 		isAttacking = false;
 		isAttacked = false;
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
@@ -44,52 +46,54 @@ public class Zombie : MonoBehaviour {
 	}
 
 	private void setZombieAttributes(float actualDistance){
-		if (actualDistance <= detectionDistance && actualDistance > attackRange) {
-			isWalking = true;
+		//if (actualDistance <= detectionDistance && actualDistance > attackRange) {
+		if (actualDistance > attackRange) {
+			isChasing = true;
 			isAttacking = false;
 
 		} else if (actualDistance <= attackRange) {
-			isWalking = false;
+			isChasing = false;
 			isAttacking = true;
 
-		} else {
-			isWalking = false;
+		} /*else {
+			isChasing = false;
 			isAttacking = false;
+		}*/
+	}
+
+	bool SeesPlayer(){
+		float distance = Vector3.Distance (player.transform.position, transform.position);
+		RaycastHit hit;
+		Vector3 rayDirection = player.transform.position - transform.position;
+
+		if (Physics.Raycast (transform.position, rayDirection, out hit)) {
+			if ((hit.transform.tag == "Player") && (distance < detectionDistance)) {
+				Debug.Log ("közel a blyat");
+				return true;
+			}
 		}
+		Debug.DrawRay ((transform.position + new Vector3(0,1,1)), rayDirection, Color.green);
+		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
+			Debug.Log ("player inside pov");
+			if (Physics.Raycast ((transform.position + new Vector3(0,1,1)), rayDirection, out hit)) {
+				Debug.Log (hit.transform.tag);
+				if (hit.transform.tag== "Player") {
+					Debug.Log ("Can see the player");
+					return true;
+				} else {
+					Debug.Log("Can't see the player");
+					return false;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	void Update () {
 
-		//RaycastHit hit;
-		Vector3 directionOfLine = player.transform.position - transform.position;
-		float angle = Vector3.Angle (directionOfLine, transform.forward);
-		if (angle < 5) {
-			RaycastHit hit;
-			Debug.Log ("sikerült");
-			if(Physics.Raycast(transform.position + transform.up, directionOfLine.normalized, out hit, 10)){
-				if (hit.collider.gameObject == player || hit.collider.tag == "Player") {
-					transform.LookAt (player);
-					Debug.Log ("sikerült");
-				}
-			}
-		}
-		/*
-		//Debug.DrawRay ((transform.position + (Vector3.left * 6) + (Vector3.forward * 4)), directionOfLine * 3, Color.green);
-		Debug.DrawRay (transform.position + Vector3.up * 1.5f, directionOfLine, Color.green);
-		//Debug.DrawRay (transform.position + Vector3.up*1.5, directionOfLine, Color.green);
-		Debug.DrawRay (transform.position + Vector3.up, directionOfLine, Color.green);
-		if(Physics.Raycast((transform.position + (Vector3.up * 6) + (Vector3.forward * 4)), directionOfLine, out hit, 50)){
-			if(hit.collider.tag == "Player"){
-				transform.LookAt (player);
-			}
-		}*/
-	
-
-
-
-
-			/*
-
+		bool seesPlayer = SeesPlayer ();
+			
 		if(player!= null){
 			healthBarCanvas.transform.LookAt (player);
 		}
@@ -98,8 +102,16 @@ public class Zombie : MonoBehaviour {
 		if (isDead) {
 			return;
 		} else {
+			
+			if (seesPlayer) {
+				setZombieAttributes (actualDistance);
+
+			}
+
+
+			/*
 			setZombieAttributes (actualDistance);
-			if ((isWalking && !isAttacking) || isAttacked) {
+			if ((isChasing && !isAttacking) || isAttacked) {
 				bodyAnimator.SetBool ("isWalking", true);
 				bodyAnimator.SetBool ("isAttacking", false);
 				transform.LookAt (player);
@@ -116,7 +128,7 @@ public class Zombie : MonoBehaviour {
 					GetComponent<AudioSource> ().PlayOneShot (zombieWalking);			//*------------------- HANG, DE ÚGY KÉNE HOGY FÉLBESZAKAD AMIKOR KILÉP AZ IFBŐL ------*
 				}
 
-			} else if (!isWalking && isAttacking) {
+			} else if (!isChasing && isAttacking) {
 				agent.speed = 0;
 				transform.LookAt (player);
 				transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0); //ne nézzen felfelé
@@ -138,8 +150,9 @@ public class Zombie : MonoBehaviour {
 				bodyAnimator.SetBool ("isAttacking", false);
 				bodyAnimator.SetBool ("isWalking", false);
 			}
-		}
-		*/
+		}*/
+
+	
 	}
 
 	void MeleeAttack(){
@@ -155,6 +168,10 @@ public class Zombie : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	void OnCollisionEnter(Collision other){
+		Debug.Log ("Hit");
 	}
 
 

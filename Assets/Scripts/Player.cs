@@ -66,7 +66,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickUp(string pickUpName){
-		GetComponent<AudioSource> ().Stop ();
+		//GetComponent<AudioSource> ().Stop ();
 		GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
 		switch (pickUpName) {
 		case "PistolAmmo":
