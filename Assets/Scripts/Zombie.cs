@@ -18,7 +18,8 @@ public class Zombie : MonoBehaviour {
 	private SoundManager manager;
 	public ParticleSystem zombieBlood;
 	public Canvas healthBarCanvas;
-
+	public float alertDistance;
+	public float fov;
 
 	UnityEngine.AI.NavMeshAgent agent;
 
@@ -30,10 +31,10 @@ public class Zombie : MonoBehaviour {
 	private bool isChasing;
 	private bool isAttacking;
 	private bool isAttacked;
-	private float fov;
+
 
 	void Start () {
-		fov = 30;
+		fov = 50;
 		isDead = false;
 		isChasing = false;
 		isAttacking = false;
@@ -72,12 +73,12 @@ public class Zombie : MonoBehaviour {
 				return true;
 			}
 		}
-		Debug.DrawRay ((transform.position + new Vector3(0,1,1)), rayDirection, Color.green);
+		Debug.DrawRay ((transform.position + new Vector3(0,0.3f,0)), rayDirection, Color.green);
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
 			Debug.Log ("player inside pov");
-			if (Physics.Raycast ((transform.position + new Vector3(0,1,1)), rayDirection, out hit)) {
+			if (Physics.Raycast ((transform.position + new Vector3(0,0.3f,0)), rayDirection, out hit, 50)) {
 				Debug.Log (hit.transform.tag);
-				if (hit.transform.tag== "Player") {
+				if (hit.transform.tag != "Wall") {
 					Debug.Log ("Can see the player");
 					return true;
 				} else {
@@ -105,7 +106,45 @@ public class Zombie : MonoBehaviour {
 			
 			if (seesPlayer) {
 				setZombieAttributes (actualDistance);
+				if (isChasing && !isAttacking) {
+					bodyAnimator.SetBool ("isWalking", true);
+					bodyAnimator.SetBool ("isAttacking", false);
+					transform.LookAt (player);
+					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
 
+					agent.SetDestination (player.position);
+					agent.speed = zombieWalkingSpeed;
+
+					if (GetComponent<AudioSource> ().clip == zombieAttacking) {
+						GetComponent<AudioSource> ().Stop ();
+						GetComponent<AudioSource> ().clip = zombieWalking;
+					}
+					if(!GetComponent<AudioSource>().isPlaying){
+						GetComponent<AudioSource> ().PlayOneShot (zombieWalking);			//*------------------- HANG, DE ÚGY KÉNE HOGY FÉLBESZAKAD AMIKOR KILÉP AZ IFBŐL ------*
+					}
+
+				} else if (!isChasing && isAttacking) {
+					agent.speed = 0;
+					transform.LookAt (player);
+					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0); //ne nézzen felfelé
+					bodyAnimator.SetBool ("isAttacking", true);
+					bodyAnimator.SetBool ("isWalking", false);
+					MeleeAttack ();
+
+					if (GetComponent<AudioSource> ().clip == zombieWalking) {
+						GetComponent<AudioSource> ().Stop ();
+						GetComponent<AudioSource> ().clip = zombieAttacking;
+					}
+
+					if (!GetComponent<AudioSource> ().isPlaying) {
+						GetComponent<AudioSource> ().PlayOneShot (zombieAttacking);
+					}
+
+				} 
+			}else {
+				agent.speed = 0;
+				bodyAnimator.SetBool ("isAttacking", false);
+				bodyAnimator.SetBool ("isWalking", false);
 			}
 
 
@@ -149,8 +188,8 @@ public class Zombie : MonoBehaviour {
 				agent.speed = 0;
 				bodyAnimator.SetBool ("isAttacking", false);
 				bodyAnimator.SetBool ("isWalking", false);
-			}
-		}*/
+			}*/
+		}
 
 	
 	}
