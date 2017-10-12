@@ -1897,6 +1897,7 @@ MonoBehaviour:
   zombieLayer:
     serializedVersion: 2
     m_Bits: 1024
+  eyeSight: 30
 --- !u!114 &114684676255762924
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -21,6 +21,7 @@ public class Zombie : MonoBehaviour {
 	public float alertDistance;
 	public float fov;
 	public LayerMask zombieLayer;
+	public int eyeSight;
 
 	UnityEngine.AI.NavMeshAgent agent;
 
@@ -29,18 +30,18 @@ public class Zombie : MonoBehaviour {
 	private Transform player;
 	private int maxHealth;
 	private bool isDead;
-	private bool isChasing;
+	private bool isChasingPlayer;
 	private bool isAttacking;
 	private bool isAttacked;
-
-
+	private bool isFollowingZombie;
 
 	void Start () {
 		fov = 50;
 		isDead = false;
-		isChasing = false;
+		isChasingPlayer = false;
 		isAttacking = false;
 		isAttacked = false;
+		isFollowingZombie = false;
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		agent = GetComponent<UnityEngine.AI.NavMeshAgent> ();
 		maxHealth = health;
@@ -52,11 +53,11 @@ public class Zombie : MonoBehaviour {
 	void setZombieAttributes(float actualDistance){
 		//if (actualDistance <= detectionDistance && actualDistance > attackRange) {
 		if (actualDistance > attackRange) {
-			isChasing = true;
+			isChasingPlayer = true;
 			isAttacking = false;
 
 		} else if (actualDistance <= attackRange) {
-			isChasing = false;
+			isChasingPlayer = false;
 			isAttacking = true;
 
 		} /*else {
@@ -70,15 +71,19 @@ public class Zombie : MonoBehaviour {
 		//StartCoroutine ("Alerted");
 		for(int i = 0; i < zombies.Length; ++i){
 			Zombie z = zombies [i].gameObject.GetComponent<Zombie>();
-			Debug.Log (z.tag + " ALERTED FV " + z.name);
+			//Debug.Log (z.tag + " ALERTED FV " + z.name);
 				if (z.ChasingPlayer()) {
 				if (!SeesPlayer ()) {
+					isChasingPlayer = false;
+					isFollowingZombie = true;
 					agent.SetDestination (z.transform.position);
 					agent.speed = zombieWalkingSpeed;
 					bodyAnimator.SetBool ("isWalking", true);
 					bodyAnimator.SetBool ("isAttacking", false);
 					transform.LookAt (z.transform);
 					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+				} else {
+					isFollowingZombie = false;
 				}
 			}
 		}
@@ -96,8 +101,8 @@ public class Zombie : MonoBehaviour {
 		}
 		Debug.DrawRay ((transform.position + new Vector3(0,0.3f,0)), rayDirection, Color.green);
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
-			if (Physics.Raycast ((transform.position + new Vector3(0,0.3f,0)), rayDirection, out hit, 50)) {
-				Debug.Log (hit.transform.tag);
+			if (Physics.Raycast ((transform.position + new Vector3(0,0.3f,0)), rayDirection, out hit, eyeSight)) {
+				//Debug.Log (hit.transform.tag);
 				if (hit.transform.tag != "Wall") {
 					return true;
 				} else {
@@ -105,16 +110,14 @@ public class Zombie : MonoBehaviour {
 				}
 			}
 		}
-
 		return false;
 	}
 
 	public bool ChasingPlayer(){
-		if (isChasing) {
+		if (isChasingPlayer) {
 			return true;
 		}
 		return false;
-
 	}
 
 	void Update () {
@@ -132,9 +135,9 @@ public class Zombie : MonoBehaviour {
 				for(int i = 0; i < zombies.Length; ++i){
 					zombies [i].SendMessage ("Alerted");
 				}
-				Debug.Log (zombies.Length);
+				//Debug.Log (zombies.Length);
 				setZombieAttributes (actualDistance);
-				if (isChasing && !isAttacking) {
+				if (isChasingPlayer && !isAttacking) {
 					bodyAnimator.SetBool ("isWalking", true);
 					bodyAnimator.SetBool ("isAttacking", false);
 					transform.LookAt (player);
@@ -151,7 +154,7 @@ public class Zombie : MonoBehaviour {
 						GetComponent<AudioSource> ().PlayOneShot (zombieWalking);			//*------------------- HANG, DE ÚGY KÉNE HOGY FÉLBESZAKAD AMIKOR KILÉP AZ IFBŐL ------*
 					}
 
-				} else if (!isChasing && isAttacking) {
+				} else if (!isChasingPlayer && isAttacking) {
 					agent.speed = 0;
 					transform.LookAt (player);
 					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0); //ne nézzen felfelé
@@ -275,7 +278,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	IEnumerator DestroyZombie() {
-		yield return new WaitForSeconds(5.5f);
+		yield return new WaitForSeconds(1.5f);
 		Destroy (gameObject);
 	}
 
