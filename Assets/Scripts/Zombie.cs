@@ -15,7 +15,6 @@ public class Zombie : MonoBehaviour {
 	public AudioClip zombieAttacking;
 	public int damage;
 	public AudioClip zombieDeath;
-	private SoundManager manager;
 	public ParticleSystem zombieBlood;
 	public Canvas healthBarCanvas;
 	public float alertDistance;
@@ -34,6 +33,7 @@ public class Zombie : MonoBehaviour {
 	private bool isAttacking;
 	private bool isAttacked;
 	private bool isFollowingZombie;
+	private SoundManager manager;
 
 	void Start () {
 		fov = 50;
@@ -48,6 +48,7 @@ public class Zombie : MonoBehaviour {
 		healthBar = transform.Find ("EnemyCanvas").Find("HealthBar").Find("Health").GetComponent<Image> ();
 		GetComponent<AudioSource> ().clip = zombieWalking;
 		alertDistance = 8;
+		IdleMovement ();
 	}
 
 	void setZombieAttributes(float actualDistance){
@@ -63,6 +64,33 @@ public class Zombie : MonoBehaviour {
 		} /*else {
 			isChasing = false;
 			isAttacking = false;
+		}*/
+	}
+
+	void IdleMovement(){
+		Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
+		//StartCoroutine ("Alerted");
+		Vector3[] zombieForwardVectors = new Vector3[zombies.Length];
+		float[] zombieForwardAngles = new float[zombies.Length];
+		for (int i = 1; i < zombies.Length; ++i) {
+			if (!zombies.Equals (gameObject)) {
+				Zombie z = zombies [i].gameObject.GetComponent<Zombie> ();
+				zombieForwardVectors [i] = z.transform.forward;
+				//zombieForwardAngles [i] = Vector3.Angle (z.transform.forward, transform.forward);
+			}
+		}
+		Debug.Log (gameObject.name + "\n");
+		for (int i = 0; i < zombieForwardVectors.Length; ++i) {
+			Debug.Log (zombieForwardVectors [i] + "  ");
+		}
+
+		for (int i = 0; i < zombieForwardVectors.Length; ++i) {
+			zombieForwardAngles [i] = Vector3.Angle (transform.forward, zombieForwardVectors[i]);
+			Debug.Log (zombieForwardAngles[i] + "  ");
+		}
+		//Debug.Log (gameObject.transform.rotation);
+		/*foreach (float value in zombieForwardAngles) {
+			Debug.Log (gameObject.name + "angle to other zombies: " + value);
 		}*/
 	}
 
