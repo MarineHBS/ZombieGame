@@ -10,12 +10,16 @@ public class Gun : MonoBehaviour {
 	public AudioClip emptyClip;
 	public Ammo ammo;
 	public int damage;
+	public GameObject[] bulletHoles;
 
 	void Start () {
 		lastTimeFired = Time.time - 5;	//Optional, if u want to fire instantly when the game starts
 	}
 		
 	protected virtual void Update (){}	//These methods are overriden
+
+	//Vector3 forward = gameObject.transform.TransformDirection(Vector3.forward);
+	RaycastHit hit;
 
 	private void processHit(GameObject hitObject){
 		if (hitObject.GetComponentInParent<Zombie> () != null || hitObject.tag == "Zombie") {
@@ -33,6 +37,9 @@ public class Gun : MonoBehaviour {
 				RaycastHit hit;
 				if (Physics.Raycast (ray, out hit)) {				//Infinite range, 3rd parameter
 					processHit (hit.collider.gameObject);
+					if (hit.collider.gameObject.tag == "Wall") {
+						Instantiate (bulletHoles [Random.Range (0, 1)], hit.point, Quaternion.FromToRotation (Vector3.up, hit.normal));
+					}
 				}
 			} else {
 				GetComponent<AudioSource> ().PlayOneShot (emptyClip);
