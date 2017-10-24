@@ -35,6 +35,12 @@ public class Zombie : MonoBehaviour {
 	private bool isFollowingZombie;
 	private SoundManager manager;
 
+	float speedY;
+	float lookDirection = 0;
+	bool moveZombie = false;
+	int zombiesNearby;
+	bool isSpeedPositive;
+
 	void Start () {
 		fov = 50;
 		isDead = false;
@@ -50,7 +56,8 @@ public class Zombie : MonoBehaviour {
 		GetComponent<AudioSource> ().Stop ();
 		alertDistance = 8;
 		//InvokeRepeating ("IdleMovement", 2, 4f);
-		IdleMovement ();
+		InvokeRepeating ("IdleMovement", 0, 4f);
+		InvokeRepeating ("MoveZombies", 2, 4);
 	}
 
 	void setZombieAttributes(float actualDistance){
@@ -78,12 +85,27 @@ public class Zombie : MonoBehaviour {
 		return sum;
 	}
 
-	void IdleMovement(){
-		Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
-		//StartCoroutine ("Alerted");
+	float angleBetween(Vector3 v1, Vector3 v2, Vector3 n){
+		//angle in [0,180]
+		float angle = Vector3.Angle(v1, v2);
+		float sign = Mathf.Sign (Vector3.Dot (n, Vector3.Cross (v1, v2)));
 
-		float lookDirection = 0;
-		float speedY;
+		//angle in [-179, 180]
+		float signed_angle = angle*sign;
+
+		//angle in [0, 360]
+		float angle360 = (signed_angle + 180)%360;
+
+		return signed_angle;
+	}
+
+
+	void IdleMovement(){
+		Collider[] zombies = Physics.OverlapSphere (transform.position, detectionDistance, zombieLayer);
+		//StartCoroutine ("Alerted");
+		zombiesNearby = zombies.Length;
+		//float lookDirection = 0;
+		//float speedY;
 		float averageDistX;
 
 		float[] distancesToOtherZombies = new float[zombies.Length];
@@ -114,32 +136,44 @@ public class Zombie : MonoBehaviour {
 			Debug.Log (gameObject.name + "'s distance to others: " + distancesToOtherZombies [i]);
 		}
 		averageDistX = sumArray (distancesToOtherZombies) / distancesToOtherZombies.Length;
-		speedY = (averageDistX * (-0.3f)) + 2;
+		speedY = (averageDistX * (-0.5f)) + 5;
 
-		//Debug.Log(sumArray(distancesToOtherZombies));
-		//Debug.Log(speedY);
-
-		//transform.LookAt (player);
 		transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
 
 		agent.speed = speedY;
 		Debug.Log (gameObject.name + "'s speed: " + speedY);
-		//agent.SetDestination (player.position);
+		Plane plane = new Plane();
+		Debug.Log (plane.normal);
+		//Debug.Log ();
 
 
-
-
-		//Debug.Log (gameObject.name + "\n");
 		for (int i = 0; i < zombieForwardVectors.Length; ++i) {
 			Debug.Log (gameObject.name + "'s forward vectors are: " + zombieForwardVectors [i]);
-			//Debug.Log (zombieForwardVectors [i] + "  ");
+			//Debug.Log (gameObject.name + "'s angle to others: " + Vector3.Angle(transform.forward, zombieForwardVectors[i]));
+			//Debug.Log (gameObject.name + "'s angle to others: " + angleBetween(transform.forward, zombieForwardVectors[i], new Vector3(1,1,1)));
+			zombieForwardAngles [i] = angleBetween (transform.forward, zombieForwardVectors [i], new Vector3 (1, 1, 1));
+		}
+
+		//sumArray(
+
+
+		for (int i = 0; i < zombieForwardAngles.Length; ++i) {
+			//zombieForwardAngles [i] = Vector3.Angle (transform.forward, zombieForwardVectors[i]);
+			Debug.Log (gameObject.name + "'s angle to others: " + angleBetween(transform.forward, zombieForwardVectors[i], new Vector3(1,1,1)));
+		}
+
+		//lookDirection = ((sumArray (zombieForwardAngles) - 90) / zombieForwardAngles.Length-1);
+		if (zombiesNearby > 1) {
+			lookDirection = sumArray (zombieForwardAngles) - 90;				//Lonely zombies shouldnt move
+				lookDirection /= zombieForwardAngles.Length - 1;
+				Debug.Log (gameObject.name + "'s lookdirection is : " + lookDirection);
+				Debug.Log (gameObject.name + "'s starting lookdirection is : " + transform.eulerAngles.y);
+				lookDirection += transform.eulerAngles.y;
+				Debug.Log (gameObject.name + "'s after fixed lookdirection is : " + lookDirection);
+
 		}
 
 		/*
-		for (int i = 0; i < zombieForwardVectors.Length; ++i) {
-			zombieForwardAngles [i] = Vector3.Angle (transform.forward, zombieForwardVectors[i]);
-			Debug.Log (gameObject.name + "'s forward angles are: " + zombieForwardAngles[i]);
-		}
 		for (int i = 0; i < zombieForwardAngles.Length; ++i) {
 			
 			lookDirection += zombieForwardAngles [i];
@@ -151,14 +185,43 @@ public class Zombie : MonoBehaviour {
 		Quaternion targetLookDirection = Quaternion.Euler (0, lookDirection, 0);
 		transform.rotation = Quaternion.Lerp (transform.rotation, targetLookDirection, 1f);
 		*/
-
-
 	
 		//Debug.Log (gameObject.transform.rotation);
 		/*foreach (float value in zombieForwardAngles) {
 			Debug.Log (gameObject.name + "angle to other zombies: " + value);
 		}*/
 	}
+	/*
+	void MoveZombies(){														// NOT RANDOM LOOKDIRECTION, NOT WORKING BECAUSE ZOMBIES WILL FACE THE SAME DIRECTION
+		if (zombiesNearby > 1) {
+		Debug.Log ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		Debug.Log (lookDirection + " " + speedY);
+		Vector3 angles = transform.eulerAngles;
+		angles.y = lookDirection;
+		transform.eulerAngles = angles;
+		moveZombie = true;
+		} else {
+			moveZombie = false;
+		}
+
+	}*/
+
+	void MoveZombies(){
+		if (zombiesNearby > 1 || !isChasingPlayer) {
+			Vector3 angles = transform.eulerAngles;
+			angles.y = Random.Range (0, 360);
+			if (speedY < 0) {
+				isSpeedPositive = false;
+			} else {
+				isSpeedPositive = true;
+			}
+			transform.eulerAngles = angles;
+			moveZombie = true;
+		} else {
+			moveZombie = false;
+		}
+	}
+
 
 	void Alerted(){
 		Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
@@ -191,10 +254,10 @@ public class Zombie : MonoBehaviour {
 				return true;
 			}
 		}
-		//Debug.DrawRay ((transform.position + new Vector3(0,0.3f,0)), rayDirection, Color.green);
+		Debug.DrawRay ((transform.position + new Vector3(0,1f,0)), rayDirection, Color.green);
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
-			if (Physics.Raycast ((transform.position + new Vector3(0,0.3f,0)), rayDirection, out hit, eyeSight)) {
-				if (hit.transform.tag != "Wall") {
+			if (Physics.Raycast ((transform.position + new Vector3(0,1f,0)), rayDirection, out hit, eyeSight)) {
+				if (hit.transform.tag == "Player") {
 					return true;
 				} else {
 					return false;
@@ -211,7 +274,15 @@ public class Zombie : MonoBehaviour {
 		return false;
 	}
 
+	void OnDrawGizmosSelected(){
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireSphere (transform.position, 20);
+	}
+
 	void Update () {
+
+		//Gizmos.color = Color.yellow;
+		//Gizmos.DrawSphere (transform.position, 20);
 		
 		bool seesPlayer = SeesPlayer ();
 		if(player!= null){
@@ -224,7 +295,7 @@ public class Zombie : MonoBehaviour {
 		} else {
 			if (seesPlayer) {
 				Collider[] zombies = Physics.OverlapSphere (transform.position, 20, zombieLayer);
-				for(int i = 0; i < zombies.Length; ++i){
+				for (int i = 0; i < zombies.Length; ++i) {
 					zombies [i].SendMessage ("Alerted");
 				}
 				setZombieAttributes (actualDistance);
@@ -241,7 +312,7 @@ public class Zombie : MonoBehaviour {
 						GetComponent<AudioSource> ().Stop ();
 						GetComponent<AudioSource> ().clip = zombieWalking;
 					}
-					if(!GetComponent<AudioSource>().isPlaying){
+					if (!GetComponent<AudioSource> ().isPlaying) {
 						GetComponent<AudioSource> ().PlayOneShot (zombieWalking);			//*------------------- HANG, DE ÚGY KÉNE HOGY FÉLBESZAKAD AMIKOR KILÉP AZ IFBŐL ------*
 					}
 
@@ -263,7 +334,20 @@ public class Zombie : MonoBehaviour {
 					}
 
 				} 
-			}else {
+			} else if (moveZombie) {
+				if (!isSpeedPositive) {
+					Vector3 angles = transform.eulerAngles;
+					angles.y += 180;
+					transform.eulerAngles = angles;
+					isSpeedPositive = true;
+				}
+				setZombieAttributes (actualDistance);
+				transform.position += transform.forward * Time.deltaTime * speedY;
+				Debug.Log (isChasingPlayer);
+				bodyAnimator.SetBool ("isAttacking", false);
+				bodyAnimator.SetBool ("isWalking", true);
+			} else {
+				setZombieAttributes (actualDistance);
 				agent.speed = 0;
 				bodyAnimator.SetBool ("isAttacking", false);
 				bodyAnimator.SetBool ("isWalking", false);
@@ -371,6 +455,9 @@ public class Zombie : MonoBehaviour {
 	IEnumerator DestroyZombie() {
 		yield return new WaitForSeconds(1.5f);
 		Destroy (gameObject);
+	}
+	IEnumerator WaitASecond() {
+		yield return new WaitForSeconds(3f);
 	}
 
 }
