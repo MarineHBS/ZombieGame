@@ -24,6 +24,7 @@ public class Gun : MonoBehaviour {
 	private void processHit(GameObject hitObject){
 		if (hitObject.GetComponentInParent<Zombie> () != null || hitObject.tag == "Zombie") {
 			hitObject.GetComponentInParent<Zombie> ().TakeDamage (damage);
+			hitObject.GetComponentInParent<Zombie> ().setShotPosition (transform);
 		}
 	}
 

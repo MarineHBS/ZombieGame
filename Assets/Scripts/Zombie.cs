@@ -32,9 +32,10 @@ public class Zombie : MonoBehaviour {
 	private bool isDead;
 	private bool isChasingPlayer;
 	private bool isAttacking;
-	//private bool isAttacked;
+	private bool isAttacked;
 	//private bool isFollowingZombie;
 	private SoundManager manager;
+	private Transform shotPosition;
 
 	float speedY;
 	float lookDirection = 0;
@@ -46,7 +47,7 @@ public class Zombie : MonoBehaviour {
 		isDead = false;
 		isChasingPlayer = false;
 		isAttacking = false;
-		//isAttacked = false;
+		isAttacked = false;
 		//isFollowingZombie = false;
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		agent = GetComponent<UnityEngine.AI.NavMeshAgent> ();
@@ -95,14 +96,15 @@ public class Zombie : MonoBehaviour {
 		//angle in [-179, 180]
 		float signed_angle = angle*sign;
 
-		//angle in [0, 360]
-		//float angle360 = (signed_angle + 180)%360;
 
 		return signed_angle;
 	}
 
 
 	void IdleMovement(){
+		if (isChasingPlayer) {
+			return;
+		}
 		Collider[] zombies = Physics.OverlapSphere (transform.position, moveDetectionDistance, zombieLayer);
 		//StartCoroutine ("Alerted");
 		zombiesNearby = zombies.Length;
@@ -191,6 +193,9 @@ public class Zombie : MonoBehaviour {
 	}
 
 	void MoveZombies(){														// NOT RANDOM LOOKDIRECTION, NOT WORKING BECAUSE ZOMBIES WILL FACE THE SAME DIRECTION
+		if (isChasingPlayer) {
+			return;
+		}
 		if (zombiesNearby > 1) {
 		Debug.Log (lookDirection + " " + speedY);
 		Vector3 angles = transform.eulerAngles;
@@ -272,6 +277,10 @@ public class Zombie : MonoBehaviour {
 		return false;
 	}
 
+	public void setShotPosition(Transform shotPos){
+		shotPosition = shotPos;
+	}
+
 	public bool ChasingPlayer(){
 		if (isChasingPlayer) {
 			return true;
@@ -284,11 +293,7 @@ public class Zombie : MonoBehaviour {
 		//Gizmos.DrawWireSphere (transform.position, 20);
 	}
 
-	void Update () {
-
-		//Gizmos.color = Color.yellow;
-		//Gizmos.DrawSphere (transform.position, 20);
-		
+	void Update () {		
 		bool seesPlayer = SeesPlayer ();
 		if(player!= null){
 			healthBarCanvas.transform.LookAt (player);
@@ -339,67 +344,34 @@ public class Zombie : MonoBehaviour {
 					}
 
 				} 
-			} else if (moveZombie) {
-				if (!isSpeedPositive) {
-					Vector3 angles = transform.eulerAngles;
-					angles.y += 180;
-					transform.eulerAngles = angles;
-					isSpeedPositive = true;
-				}
-				//setZombieAttributes (actualDistance);
-				transform.position += transform.forward * Time.deltaTime * speedY;
-				Debug.Log (isChasingPlayer);
-				bodyAnimator.SetBool ("isAttacking", false);
-				bodyAnimator.SetBool ("isWalking", true);
+			} else if (moveZombie && !seesPlayer) {
+					if (!isSpeedPositive) {
+						Vector3 angles = transform.eulerAngles;
+						angles.y += 180;
+						transform.eulerAngles = angles;
+						isSpeedPositive = true;
+					}
+					//setZombieAttributes (actualDistance);
+					transform.position += transform.forward * Time.deltaTime * speedY;
+					Debug.Log (isChasingPlayer);
+					bodyAnimator.SetBool ("isAttacking", false);
+					bodyAnimator.SetBool ("isWalking", true);
 			} else {
-				setZombieAttributes (actualDistance);
-				agent.speed = 0;
-				bodyAnimator.SetBool ("isAttacking", false);
-				bodyAnimator.SetBool ("isWalking", false);
+				/*if (isAttacked) {
+					agent.SetDestination (shotPosition.position);
+					agent.speed = zombieWalkingSpeed;
+					bodyAnimator.SetBool ("isAttacking", false);
+					bodyAnimator.SetBool ("isWalking", true);
+					if (Vector3.Distance (transform.position, shotPosition.position) < 3) {
+						isAttacked = false;
+					}*/
+				
+					setZombieAttributes (actualDistance);
+					agent.speed = 0;
+					bodyAnimator.SetBool ("isAttacking", false);
+					bodyAnimator.SetBool ("isWalking", false);
+
 			}
-
-
-			/*
-			setZombieAttributes (actualDistance);
-			if ((isChasing && !isAttacking) || isAttacked) {
-				bodyAnimator.SetBool ("isWalking", true);
-				bodyAnimator.SetBool ("isAttacking", false);
-				transform.LookAt (player);
-				transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
-
-				agent.SetDestination (player.position);
-				agent.speed = zombieWalkingSpeed;
-
-				if (GetComponent<AudioSource> ().clip == zombieAttacking) {
-					GetComponent<AudioSource> ().Stop ();
-					GetComponent<AudioSource> ().clip = zombieWalking;
-				}
-				if(!GetComponent<AudioSource>().isPlaying){
-					GetComponent<AudioSource> ().PlayOneShot (zombieWalking);			//*------------------- HANG, DE ÚGY KÉNE HOGY FÉLBESZAKAD AMIKOR KILÉP AZ IFBŐL ------*
-				}
-
-			} else if (!isChasing && isAttacking) {
-				agent.speed = 0;
-				transform.LookAt (player);
-				transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0); //ne nézzen felfelé
-				bodyAnimator.SetBool ("isAttacking", true);
-				bodyAnimator.SetBool ("isWalking", false);
-				MeleeAttack ();
-
-				if (GetComponent<AudioSource> ().clip == zombieWalking) {
-					GetComponent<AudioSource> ().Stop ();
-					GetComponent<AudioSource> ().clip = zombieAttacking;
-				}
-
-				if (!GetComponent<AudioSource> ().isPlaying) {
-					GetComponent<AudioSource> ().PlayOneShot (zombieAttacking);
-				}
-
-			} else {
-				agent.speed = 0;
-				bodyAnimator.SetBool ("isAttacking", false);
-				bodyAnimator.SetBool ("isWalking", false);
-			}*/
 		}
 
 	

@@ -16,6 +16,7 @@ public class Player : MonoBehaviour {
 	public AudioClip playerDeath;
 	public AudioClip pickUpPickedUp;
 	public AudioClip trapDoorOpening;
+	public AudioClip pickUpKey;
 	private WeaponHolder weaponHolder;
 	private int amountOfKeys;
 
@@ -110,6 +111,7 @@ public class Player : MonoBehaviour {
 			GetComponent<AudioSource> ().PlayOneShot(trapDoorOpening);
 		}
 		if (other.gameObject.tag == "Key") {
+			GetComponent<AudioSource> ().PlayOneShot (pickUpKey);
 			amountOfKeys++;
 			UI.SetKeyText (amountOfKeys);
 			Destroy (other.gameObject);
