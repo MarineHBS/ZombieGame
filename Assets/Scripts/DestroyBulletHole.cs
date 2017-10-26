@@ -11,8 +11,6 @@ public class DestroyBulletHole : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 forward = transform.TransformDirection(Vector3.forward);
-		RaycastHit hit;
 
 	}
 }

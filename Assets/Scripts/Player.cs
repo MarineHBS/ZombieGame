@@ -9,14 +9,19 @@ public class Player : MonoBehaviour {
 	public GameUI UI;
 	public Animator playerAnimator;
 	public Animator startDoorAnimator;
+	public Animator secretWallAnimator;
+	public Animator trapDoorAnimator;
 	public Ammo ammo;
 	public bool isDead;
 	public AudioClip playerDeath;
 	public AudioClip pickUpPickedUp;
+	public AudioClip trapDoorOpening;
 	private WeaponHolder weaponHolder;
+	private int amountOfKeys;
 
 
 	void Start () {
+		amountOfKeys = 0;
 		ammo = GetComponent<Ammo> ();
 		isDead = false;
 		weaponHolder = GetComponent<WeaponHolder> ();
@@ -66,7 +71,6 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickUp(string pickUpName){
-		//GetComponent<AudioSource> ().Stop ();
 		GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
 		switch (pickUpName) {
 		case "PistolAmmo":
@@ -97,6 +101,21 @@ public class Player : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		if (other.gameObject.tag == "Door") {
 			startDoorAnimator.Play ("DoorOpening");
+		}
+		if (other.gameObject.tag == "SecretWall") {
+			secretWallAnimator.Play ("SecretDoorAnimation");
+		}
+		if (other.gameObject.tag == "TrapDoor" && amountOfKeys == 3) {
+			trapDoorAnimator.Play ("TrapDoorAnimation");
+			GetComponent<AudioSource> ().PlayOneShot(trapDoorOpening);
+		}
+		if (other.gameObject.tag == "Key") {
+			amountOfKeys++;
+			UI.SetKeyText (amountOfKeys);
+			Destroy (other.gameObject);
+		}
+		if (other.gameObject.tag == "TreasureChest") {
+			gameController.Win ();
 		}
 	}
 

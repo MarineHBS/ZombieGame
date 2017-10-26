@@ -9,6 +9,8 @@ public class GameUI : MonoBehaviour {
 	private Text healthText;
 	[SerializeField]
 	private Text ammoText;
+	[SerializeField]
+	private Text keyText;
 
 	public Player player;
 
@@ -23,6 +25,9 @@ public class GameUI : MonoBehaviour {
 
 	public void SetAmmoText(int ammo){
 		ammoText.text = ammo + "";
+	}
+	public void SetKeyText(int amountOfKeys){
+		keyText.text = amountOfKeys + "";
 	}
 
 	void Update () {

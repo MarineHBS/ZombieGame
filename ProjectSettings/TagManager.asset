@@ -11,6 +11,10 @@ TagManager:
   - Zombie
   - Door
   - PickUp
+  - SecretWall
+  - TrapDoor
+  - Key
+  - TreasureChest
   layers:
   - Default
   - TransparentFX

@@ -21,6 +21,7 @@ public class Zombie : MonoBehaviour {
 	public float fov;
 	public LayerMask zombieLayer;
 	public int eyeSight;
+	public float moveDetectionDistance;
 
 	UnityEngine.AI.NavMeshAgent agent;
 
@@ -31,8 +32,8 @@ public class Zombie : MonoBehaviour {
 	private bool isDead;
 	private bool isChasingPlayer;
 	private bool isAttacking;
-	private bool isAttacked;
-	private bool isFollowingZombie;
+	//private bool isAttacked;
+	//private bool isFollowingZombie;
 	private SoundManager manager;
 
 	float speedY;
@@ -42,28 +43,29 @@ public class Zombie : MonoBehaviour {
 	bool isSpeedPositive;
 
 	void Start () {
-		fov = 50;
 		isDead = false;
 		isChasingPlayer = false;
 		isAttacking = false;
-		isAttacked = false;
-		isFollowingZombie = false;
+		//isAttacked = false;
+		//isFollowingZombie = false;
 		player = GameObject.FindGameObjectWithTag ("Player").transform;
 		agent = GetComponent<UnityEngine.AI.NavMeshAgent> ();
 		maxHealth = health;
 		healthBar = transform.Find ("EnemyCanvas").Find("HealthBar").Find("Health").GetComponent<Image> ();
 		GetComponent<AudioSource> ().clip = zombieWalking;
 		GetComponent<AudioSource> ().Stop ();
-		alertDistance = 8;
-		//InvokeRepeating ("IdleMovement", 2, 4f);
+
 		InvokeRepeating ("IdleMovement", 0, 4f);
+		//IdleMovement ();
 		InvokeRepeating ("MoveZombies", 2, 4);
 	}
 
 	void setZombieAttributes(float actualDistance){
 		//if (actualDistance <= detectionDistance && actualDistance > attackRange) {
 		if (actualDistance > attackRange) {
-			isChasingPlayer = true;
+			if (SeesPlayer ()) {
+				isChasingPlayer = true;
+			}
 			isAttacking = false;
 
 		} else if (actualDistance <= attackRange) {
@@ -94,14 +96,14 @@ public class Zombie : MonoBehaviour {
 		float signed_angle = angle*sign;
 
 		//angle in [0, 360]
-		float angle360 = (signed_angle + 180)%360;
+		//float angle360 = (signed_angle + 180)%360;
 
 		return signed_angle;
 	}
 
 
 	void IdleMovement(){
-		Collider[] zombies = Physics.OverlapSphere (transform.position, detectionDistance, zombieLayer);
+		Collider[] zombies = Physics.OverlapSphere (transform.position, moveDetectionDistance, zombieLayer);
 		//StartCoroutine ("Alerted");
 		zombiesNearby = zombies.Length;
 		//float lookDirection = 0;
@@ -110,59 +112,59 @@ public class Zombie : MonoBehaviour {
 
 		float[] distancesToOtherZombies = new float[zombies.Length];
 		float[] zombieForwardAngles = new float[zombies.Length];
+		float[] mainZombieToOthersAngles = new float[zombies.Length];
 
+		Vector3[] mainZombieToOthersVectors = new Vector3[zombies.Length];
 		Vector3[] zombieForwardVectors = new Vector3[zombies.Length];
 
 		for (int i = 0; i < zombies.Length; ++i) {
 			if (!zombies[i].gameObject.transform.Equals(gameObject.transform)) {
 				Transform z = zombies [i].gameObject.transform;
 				zombieForwardVectors [i] = z.forward;
+				mainZombieToOthersVectors[i] = z.position - transform.position;
 				distancesToOtherZombies[i] = Vector3.Distance (transform.position, z.position);
 				//zombieForwardAngles [i] = Vector3.Angle (z.transform.forward, transform.forward);
+				mainZombieToOthersAngles[i] = angleBetween (transform.forward, (z.position - transform.position), new Vector3 (1, 1, 1));
 			}
 		}
-
-		/*
-		for (int i = 1; i < zombies.Length; ++i) {
-			if (!((zombies [i].gameObject.GetComponent<Zombie> ()).Equals (gameObject))) {
-				Zombie z = zombies [i].gameObject.GetComponent<Zombie> ();
-				zombieForwardVectors [i] = z.transform.forward;
-				distancesToOtherZombies[i] = Vector3.Distance (transform.position, z.transform.position);
-				//zombieForwardAngles [i] = Vector3.Angle (z.transform.forward, transform.forward);
-			}
-		}*/
 
 		for (int i = 0; i < distancesToOtherZombies.Length; ++i) {
-			Debug.Log (gameObject.name + "'s distance to others: " + distancesToOtherZombies [i]);
+			//Debug.Log (gameObject.name + "'s distance to others: " + distancesToOtherZombies [i]);
+			//Debug.Log (distancesToOtherZombies.Length);
 		}
-		averageDistX = sumArray (distancesToOtherZombies) / distancesToOtherZombies.Length;
-		speedY = (averageDistX * (-0.5f)) + 5;
-
-		transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+		averageDistX = sumArray (distancesToOtherZombies) / (distancesToOtherZombies.Length);
+		if (zombiesNearby > 2) {
+			speedY = (averageDistX * (-0.2f)) + 3f;
+			lookDirection += Random.Range(0, 180);
+		} else if (zombiesNearby == 2) {
+			speedY = (averageDistX * (-0.2f)) + 2.5f;
+		}
+		if (speedY < 0) {		//Stop them from moonwalking
+			//lookDirection += 180;
+		}
 
 		agent.speed = speedY;
 		Debug.Log (gameObject.name + "'s speed: " + speedY);
-		Plane plane = new Plane();
-		Debug.Log (plane.normal);
-		//Debug.Log ();
 
 
-		for (int i = 0; i < zombieForwardVectors.Length; ++i) {
-			Debug.Log (gameObject.name + "'s forward vectors are: " + zombieForwardVectors [i]);
-			//Debug.Log (gameObject.name + "'s angle to others: " + Vector3.Angle(transform.forward, zombieForwardVectors[i]));
-			//Debug.Log (gameObject.name + "'s angle to others: " + angleBetween(transform.forward, zombieForwardVectors[i], new Vector3(1,1,1)));
+		/*for (int i = 0; i < zombieForwardVectors.Length; ++i) {
+			//Debug.Log (gameObject.name + "'s forward vectors are: " + zombieForwardVectors [i]);
 			zombieForwardAngles [i] = angleBetween (transform.forward, zombieForwardVectors [i], new Vector3 (1, 1, 1));
-		}
-
-		//sumArray(
-
+			mainZombieToOthersAngles[i] = angleBetween (transform.forward, mainZombieToOthersVectors [i], new Vector3 (1, 1, 1));
+		}*/
 
 		for (int i = 0; i < zombieForwardAngles.Length; ++i) {
 			//zombieForwardAngles [i] = Vector3.Angle (transform.forward, zombieForwardVectors[i]);
-			Debug.Log (gameObject.name + "'s angle to others: " + angleBetween(transform.forward, zombieForwardVectors[i], new Vector3(1,1,1)));
+			//Debug.Log (gameObject.name + "'s angle to others: " + mainZombieToOthersAngles[i]);
 		}
 
-		//lookDirection = ((sumArray (zombieForwardAngles) - 90) / zombieForwardAngles.Length-1);
+		/*
+		for (int i = 0; i < zombieForwardAngles.Length; ++i) {
+			//zombieForwardAngles [i] = Vector3.Angle (transform.forward, zombieForwardVectors[i]);
+			Debug.Log (gameObject.name + "'s angle to others: " + angleBetween(transform.forward, zombieForwardVectors[i], new Vector3(1,1,1)));
+		}*/
+
+		/*
 		if (zombiesNearby > 1) {
 			lookDirection = sumArray (zombieForwardAngles) - 90;				//Lonely zombies shouldnt move
 				lookDirection /= zombieForwardAngles.Length - 1;
@@ -171,30 +173,25 @@ public class Zombie : MonoBehaviour {
 				lookDirection += transform.eulerAngles.y;
 				Debug.Log (gameObject.name + "'s after fixed lookdirection is : " + lookDirection);
 
-		}
-
-		/*
-		for (int i = 0; i < zombieForwardAngles.Length; ++i) {
-			
-			lookDirection += zombieForwardAngles [i];
-		}
-		lookDirection = lookDirection / zombieForwardAngles.Length;
-
-		Debug.Log (gameObject.name + "'s lookdirection is: " + lookDirection);
-
-		Quaternion targetLookDirection = Quaternion.Euler (0, lookDirection, 0);
-		transform.rotation = Quaternion.Lerp (transform.rotation, targetLookDirection, 1f);
-		*/
-	
-		//Debug.Log (gameObject.transform.rotation);
-		/*foreach (float value in zombieForwardAngles) {
-			Debug.Log (gameObject.name + "angle to other zombies: " + value);
 		}*/
+
+		if (zombiesNearby > 1) {
+			lookDirection = sumArray (mainZombieToOthersAngles);				//Lonely zombies shouldnt move
+			lookDirection /= zombieForwardAngles.Length-1;
+			//Debug.Log (gameObject.name + "'s lookdirection is : " + lookDirection);
+			//Debug.Log (gameObject.name + "'s starting lookdirection is : " + transform.eulerAngles.y);
+			lookDirection += transform.eulerAngles.y;
+			//lookDirection += 90;
+			//Debug.Log (gameObject.name + "'s after fixed lookdirection is : " + lookDirection);
+
+		}
+
+	
+
 	}
-	/*
+
 	void MoveZombies(){														// NOT RANDOM LOOKDIRECTION, NOT WORKING BECAUSE ZOMBIES WILL FACE THE SAME DIRECTION
 		if (zombiesNearby > 1) {
-		Debug.Log ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 		Debug.Log (lookDirection + " " + speedY);
 		Vector3 angles = transform.eulerAngles;
 		angles.y = lookDirection;
@@ -204,8 +201,8 @@ public class Zombie : MonoBehaviour {
 			moveZombie = false;
 		}
 
-	}*/
-
+	}
+	/*
 	void MoveZombies(){
 		if (zombiesNearby > 1 || !isChasingPlayer) {
 			Vector3 angles = transform.eulerAngles;
@@ -220,7 +217,7 @@ public class Zombie : MonoBehaviour {
 		} else {
 			moveZombie = false;
 		}
-	}
+	}*/
 
 
 	void Alerted(){
@@ -230,7 +227,7 @@ public class Zombie : MonoBehaviour {
 				if (z.ChasingPlayer()) {
 				if (!SeesPlayer ()) {
 					isChasingPlayer = false;
-					isFollowingZombie = true;
+					//isFollowingZombie = true;
 					agent.SetDestination (z.transform.position);
 					agent.speed = zombieWalkingSpeed;
 					bodyAnimator.SetBool ("isWalking", true);
@@ -238,7 +235,7 @@ public class Zombie : MonoBehaviour {
 					transform.LookAt (z.transform);
 					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
 				} else {
-					isFollowingZombie = false;
+					//isFollowingZombie = false;
 				}
 			}
 		}
@@ -254,10 +251,15 @@ public class Zombie : MonoBehaviour {
 				return true;
 			}
 		}
-		Debug.DrawRay ((transform.position + new Vector3(0,1f,0)), rayDirection, Color.green);
+		//Debug.DrawRay ((transform.position + new Vector3(0,2f,-1f)), (rayDirection + new Vector3(0, -1.3f, 1f)), Color.green);
+		//Debug.Log(Vector3.Angle (rayDirection, transform.forward) + gameObject.name);
+
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
-			if (Physics.Raycast ((transform.position + new Vector3(0,1f,0)), rayDirection, out hit, eyeSight)) {
+			
+			if (Physics.Raycast ((transform.position + new Vector3(0,2f,-1f)), (rayDirection + new Vector3(0, -1.3f, 1f)), out hit, eyeSight)) {
+				Debug.Log (hit.collider.gameObject.tag);
 				if (hit.transform.tag == "Player") {
+					//Debug.Log(Vector3.Angle (rayDirection, transform.forward) + gameObject.name);
 					return true;
 				} else {
 					return false;
@@ -275,8 +277,8 @@ public class Zombie : MonoBehaviour {
 	}
 
 	void OnDrawGizmosSelected(){
-		Gizmos.color = Color.yellow;
-		Gizmos.DrawWireSphere (transform.position, 20);
+		//Gizmos.color = Color.yellow;
+		//Gizmos.DrawWireSphere (transform.position, 20);
 	}
 
 	void Update () {
@@ -294,7 +296,7 @@ public class Zombie : MonoBehaviour {
 			return;
 		} else {
 			if (seesPlayer) {
-				Collider[] zombies = Physics.OverlapSphere (transform.position, 20, zombieLayer);
+				Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
 				for (int i = 0; i < zombies.Length; ++i) {
 					zombies [i].SendMessage ("Alerted");
 				}
@@ -341,7 +343,7 @@ public class Zombie : MonoBehaviour {
 					transform.eulerAngles = angles;
 					isSpeedPositive = true;
 				}
-				setZombieAttributes (actualDistance);
+				//setZombieAttributes (actualDistance);
 				transform.position += transform.forward * Time.deltaTime * speedY;
 				Debug.Log (isChasingPlayer);
 				bodyAnimator.SetBool ("isAttacking", false);
@@ -433,7 +435,7 @@ public class Zombie : MonoBehaviour {
 		if (isDead) {
 			return;
 		}
-		isAttacked = true;
+		//isAttacked = true;
 		health -= damage;
 		if(zombieBlood.isPlaying){
 			zombieBlood.Stop ();

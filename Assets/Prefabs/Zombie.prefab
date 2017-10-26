@@ -1880,10 +1880,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ff5216c9de378f45ae1b71123666715, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 200
+  health: 91
   attackRange: 3
   hitRate: 1
-  detectionDistance: 20
+  detectionDistance: 8
   zombieWalkingSpeed: 4
   bodyAnimator: {fileID: 95692709566193066}
   zombieWalking: {fileID: 8300000, guid: 7cad94a141f034a61a5f046ad5fb4919, type: 3}
@@ -1892,12 +1892,13 @@ MonoBehaviour:
   zombieDeath: {fileID: 8300000, guid: bf648643fe845674384e3571e60a95b4, type: 3}
   zombieBlood: {fileID: 198016619647609324}
   healthBarCanvas: {fileID: 223446484785775238}
-  alertDistance: 0
-  fov: 0
+  alertDistance: 10
+  fov: 40
   zombieLayer:
     serializedVersion: 2
     m_Bits: 1024
-  eyeSight: 30
+  eyeSight: 50
+  moveDetectionDistance: 20
 --- !u!114 &114684676255762924
 MonoBehaviour:
   m_ObjectHideFlags: 1

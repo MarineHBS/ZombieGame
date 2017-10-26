@@ -11,15 +11,23 @@ public class GameController : MonoBehaviour {
 	public Transform pauseCanvas;
 	public Transform player;
 	public Transform gameOverUI;
+	public Transform winUI;
+	public bool isGameWon;
 
 	void Start () {
 		isPaused = false;
 		isGameOver = false;
+		isGameWon = false;
 	}
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			isPaused = !isPaused;
+		}
+		if (isGameWon) {
+			Time.timeScale = 0;
+			winUI.gameObject.SetActive (true);
+			GameChanged(false);
 		}
 		if (isPaused && !isGameOver) {
 			Time.timeScale = 0;
@@ -30,7 +38,7 @@ public class GameController : MonoBehaviour {
 			pauseCanvas.gameObject.SetActive (false);
 			gameOverUI.gameObject.SetActive (true);
 			GameChanged (false);
-		} else if (!isPaused && !isGameOver) {
+		} else if (!isPaused && !isGameOver && !isGameWon) {
 			gameOverUI.gameObject.SetActive (false);
 			pauseCanvas.gameObject.SetActive (false);
 			GameChanged (true);
@@ -70,6 +78,10 @@ public class GameController : MonoBehaviour {
 		} else {
 			Debug.Log ("No such game event" + state);
 		}
+	}
+
+	public void Win(){
+		isGameWon = true;
 	}
 
 	public void Resume(){
