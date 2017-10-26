@@ -221,6 +221,9 @@ public class Zombie : MonoBehaviour {
 
 
 	void Alerted(){
+		if (SeesPlayer ()) {
+			return;
+		}
 		Collider[] zombies = Physics.OverlapSphere (transform.position, alertDistance, zombieLayer);
 		for(int i = 0; i < zombies.Length; ++i){
 			Zombie z = zombies [i].gameObject.GetComponent<Zombie>();
