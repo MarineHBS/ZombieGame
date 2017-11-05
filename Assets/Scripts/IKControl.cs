@@ -21,7 +21,6 @@ public class IKControl : MonoBehaviour {
 	}
 
 	void OnAnimatorIK(){
-		Debug.Log (wp.GetActiveWeaponConstraint ().ToString());
 		animator.SetIKPositionWeight (AvatarIKGoal.RightHand, 1);
 		animator.SetIKRotationWeight (AvatarIKGoal.RightHand, 1);
 

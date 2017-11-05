@@ -39,7 +39,18 @@ public class Gun : MonoBehaviour {
 				if (Physics.Raycast (ray, out hit)) {				//Infinite range, 3rd parameter
 					processHit (hit.collider.gameObject);
 					if (hit.collider.gameObject.tag == "Wall") {
-						Instantiate (bulletHoles [Random.Range (0, 1)], hit.point, Quaternion.FromToRotation (Vector3.up, hit.normal));
+						Vector3 hitpoint = hit.point;
+						Quaternion rot = Quaternion.FromToRotation (Vector3.up, hit.normal);
+						Debug.Log (rot.eulerAngles);
+						if (rot.x > 0 || rot.z > 0) {
+							Debug.Log ("siker2");
+							hitpoint = hit.point + new Vector3 (0, 0, -0.1f);
+						} else if (rot.x < 0) {
+							Debug.Log ("siker");
+							hitpoint = hit.point + new Vector3 (0, 0, -0.1f);
+						}
+						Debug.Log (Quaternion.FromToRotation (Vector3.up, hit.normal));
+						Instantiate (bulletHoles [Random.Range (0, 1)], hitpoint, rot);
 					}
 				}
 			} else {

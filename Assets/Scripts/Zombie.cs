@@ -57,12 +57,10 @@ public class Zombie : MonoBehaviour {
 		GetComponent<AudioSource> ().Stop ();
 
 		InvokeRepeating ("IdleMovement", 0, 4f);
-		//IdleMovement ();
 		InvokeRepeating ("MoveZombies", 2, 4);
 	}
 
 	void setZombieAttributes(float actualDistance){
-		//if (actualDistance <= detectionDistance && actualDistance > attackRange) {
 		if (actualDistance > attackRange) {
 			if (SeesPlayer ()) {
 				isChasingPlayer = true;
@@ -146,7 +144,7 @@ public class Zombie : MonoBehaviour {
 		}
 
 		agent.speed = speedY;
-		Debug.Log (gameObject.name + "'s speed: " + speedY);
+		//Debug.Log (gameObject.name + "'s speed: " + speedY);
 
 
 		/*for (int i = 0; i < zombieForwardVectors.Length; ++i) {
@@ -197,7 +195,7 @@ public class Zombie : MonoBehaviour {
 			return;
 		}
 		if (zombiesNearby > 1) {
-		Debug.Log (lookDirection + " " + speedY);
+		//Debug.Log (lookDirection + " " + speedY);
 		Vector3 angles = transform.eulerAngles;
 		angles.y = lookDirection;
 		transform.eulerAngles = angles;
@@ -265,7 +263,7 @@ public class Zombie : MonoBehaviour {
 		if (Vector3.Angle (rayDirection, transform.forward) < fov) {
 			
 			if (Physics.Raycast ((transform.position + new Vector3(0,2f,-1f)), (rayDirection + new Vector3(0, -1.3f, 1f)), out hit, eyeSight)) {
-				Debug.Log (hit.collider.gameObject.tag);
+				//Debug.Log (hit.collider.gameObject.tag);
 				if (hit.transform.tag == "Player") {
 					//Debug.Log(Vector3.Angle (rayDirection, transform.forward) + gameObject.name);
 					return true;
@@ -353,7 +351,7 @@ public class Zombie : MonoBehaviour {
 					}
 					//setZombieAttributes (actualDistance);
 					transform.position += transform.forward * Time.deltaTime * speedY;
-					Debug.Log (isChasingPlayer);
+					//Debug.Log (isChasingPlayer);
 					bodyAnimator.SetBool ("isAttacking", false);
 					bodyAnimator.SetBool ("isWalking", true);
 			} else {
@@ -393,7 +391,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision other){
-		Debug.Log ("Hit");
+		//Debug.Log ("Hit");
 	}
 
 
