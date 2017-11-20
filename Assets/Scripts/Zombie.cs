@@ -233,15 +233,12 @@ public class Zombie : MonoBehaviour {
 				if (z.ChasingPlayer()) {
 				if (!SeesPlayer ()) {
 					isChasingPlayer = false;
-					//isFollowingZombie = true;
 					agent.SetDestination (z.transform.position);
 					agent.speed = zombieWalkingSpeed;
 					bodyAnimator.SetBool ("isWalking", true);
 					bodyAnimator.SetBool ("isAttacking", false);
 					transform.LookAt (z.transform);
 					transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
-				} else {
-					//isFollowingZombie = false;
 				}
 			}
 		}
@@ -286,10 +283,6 @@ public class Zombie : MonoBehaviour {
 		return false;
 	}
 
-	void OnDrawGizmosSelected(){
-		//Gizmos.color = Color.yellow;
-		//Gizmos.DrawWireSphere (transform.position, 20);
-	}
 
 	void Update () {		
 		bool seesPlayer = SeesPlayer ();
