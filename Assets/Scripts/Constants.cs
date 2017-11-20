@@ -18,16 +18,14 @@ public class Constants : MonoBehaviour {
 
 	//Pickups
 	public const int PickUpAmmo = 1;
-	public const int PickUpHealth = 2;
-	public const int PickUpKey = 3;
+	public const int PickUpKey = 2;
 
 	//Misc
 	public const string Game = "Game";
 	public const float CameraDefaultZoom = 60f;
 
-	public static readonly int[] AllPickupTypes = new int[3] {
+	public static readonly int[] AllPickupTypes = new int[2] {
 		PickUpAmmo,
-		PickUpHealth,
 		PickUpKey
 	};
 

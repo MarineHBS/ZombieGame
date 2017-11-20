@@ -72,35 +72,34 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickUp(string pickUpName){
-		GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
+		
 		switch (pickUpName) {
 		case "PistolAmmo":
+			GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
 			pickUpPistolAmmo ();
 			if (weaponHolder.GetActiveWeaponConstraint () == Constants.Pistol) {
 				UI.SetAmmoText (ammo.GetAmmo (Constants.Pistol));
 			}
 			break;
 		case "Ak47Ammo":
+			GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
 			pickUpAk47Ammo ();
 			if (weaponHolder.GetActiveWeaponConstraint () == Constants.Ak47) {
 				UI.SetAmmoText (ammo.GetAmmo (Constants.Ak47));
 			}
 			break;
 		case "GatlingGunAmmo":
+			GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
 			pickUpGatlingGunAmmo ();
 			if (weaponHolder.GetActiveWeaponConstraint () == Constants.GatlingGun) {
 				UI.SetAmmoText (ammo.GetAmmo (Constants.GatlingGun));
 			}
-			break;
-		case "Health":
-			pickUpHealth ();
 			break;
 		case "Key":
 			GetComponent<AudioSource> ().PlayOneShot (pickUpKey);
 			amountOfKeys++;
 			UI.SetKeyText (amountOfKeys);
 			break;
-
 		}
 	}
 
