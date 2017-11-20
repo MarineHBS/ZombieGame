@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 198857030333498926}
   - component: {fileID: 199883382670318330}
   - component: {fileID: 65384432866353562}
+  - component: {fileID: 114426580943068488}
   m_Layer: 0
   m_Name: silverKey
   m_TagString: Key
@@ -142,6 +143,18 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114426580943068488
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489319311517872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7707f063f914e7348b4e606ce22917e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickUpName: Key
 --- !u!198 &198857030333498926
 ParticleSystem:
   m_ObjectHideFlags: 1

@@ -95,6 +95,11 @@ public class Player : MonoBehaviour {
 		case "Health":
 			pickUpHealth ();
 			break;
+		case "Key":
+			GetComponent<AudioSource> ().PlayOneShot (pickUpKey);
+			amountOfKeys++;
+			UI.SetKeyText (amountOfKeys);
+			break;
 
 		}
 	}
@@ -109,13 +114,13 @@ public class Player : MonoBehaviour {
 		if (other.gameObject.tag == "TrapDoor" && amountOfKeys == 3) {
 			trapDoorAnimator.Play ("TrapDoorAnimation");
 			GetComponent<AudioSource> ().PlayOneShot(trapDoorOpening);
-		}
+		}/*
 		if (other.gameObject.tag == "Key") {
 			GetComponent<AudioSource> ().PlayOneShot (pickUpKey);
 			amountOfKeys++;
 			UI.SetKeyText (amountOfKeys);
 			Destroy (other.gameObject);
-		}
+		}*/
 		if (other.gameObject.tag == "TreasureChest") {
 			gameController.Win ();
 		}

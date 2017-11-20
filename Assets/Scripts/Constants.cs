@@ -19,7 +19,7 @@ public class Constants : MonoBehaviour {
 	//Pickups
 	public const int PickUpAmmo = 1;
 	public const int PickUpHealth = 2;
-	public const int PickUpArmor = 3;
+	public const int PickUpKey = 3;
 
 	//Misc
 	public const string Game = "Game";
@@ -27,8 +27,8 @@ public class Constants : MonoBehaviour {
 
 	public static readonly int[] AllPickupTypes = new int[3] {
 		PickUpAmmo,
-		PickUpArmor,
-		PickUpHealth
+		PickUpHealth,
+		PickUpKey
 	};
 
 

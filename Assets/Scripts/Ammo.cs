@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Ammo : MonoBehaviour {
 
+	public GameUI UI;
+
 	[SerializeField]
 	private int pistolAmmo = 10;
 
@@ -14,8 +16,6 @@ public class Ammo : MonoBehaviour {
 	private int gatlingGunAmmo = 100;
 
 	public Dictionary<string, int> tagToAmmo;
-
-	public GameUI UI;
 
 	void Awake(){
 		tagToAmmo = new Dictionary<string, int> {
