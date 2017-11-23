@@ -72,7 +72,6 @@ public class Player : MonoBehaviour {
 	}
 
 	public void PickUp(string pickUpName){
-		
 		switch (pickUpName) {
 		case "PistolAmmo":
 			GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
@@ -113,17 +112,10 @@ public class Player : MonoBehaviour {
 		if (other.gameObject.tag == "TrapDoor" && amountOfKeys == 3) {
 			trapDoorAnimator.Play ("TrapDoorAnimation");
 			GetComponent<AudioSource> ().PlayOneShot(trapDoorOpening);
-		}/*
-		if (other.gameObject.tag == "Key") {
-			GetComponent<AudioSource> ().PlayOneShot (pickUpKey);
-			amountOfKeys++;
-			UI.SetKeyText (amountOfKeys);
-			Destroy (other.gameObject);
-		}*/
+		}
 		if (other.gameObject.tag == "TreasureChest") {
 			gameController.Win ();
 		}
 	}
-
 
 }

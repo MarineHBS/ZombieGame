@@ -18,13 +18,13 @@ AudioMixerController:
   m_AudioMixerGroupViews:
   - guids:
     - 4de9228595ae526469bc1f423d011ac9
-    - 4f22a28dd7dfdfa4193e07d201fdc75f
     - d339c8dbd54758b4f81a460bf86668b3
+    - 4f22a28dd7dfdfa4193e07d201fdc75f
     - 94a946705a1808c4790a8b09c24e1a4e
     - f3e788e722a4faa4b9890dd05cbb8d89
+    - f40e3de6c9ec3ff44a8e47e87ff6171d
     - 39616cc75e1a175499f0cc1697484619
     - d4834baa1c090bb40a660ddb6b6f6d04
-    - f40e3de6c9ec3ff44a8e47e87ff6171d
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}

@@ -71,10 +71,7 @@ public class Zombie : MonoBehaviour {
 			isChasingPlayer = false;
 			isAttacking = true;
 
-		} /*else {
-			isChasing = false;
-			isAttacking = false;
-		}*/
+		} 
 	}
 
 	float sumArray(float[] summed){
