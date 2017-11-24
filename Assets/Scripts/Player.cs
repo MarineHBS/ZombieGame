@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour
+{
 
 	public int health;
 	public GameController gameController;
@@ -21,36 +22,39 @@ public class Player : MonoBehaviour {
 	private int amountOfKeys;
 
 
-	void Start () {
+	void Start ()
+	{
 		amountOfKeys = 0;
 		ammo = GetComponent<Ammo> ();
 		isDead = false;
 		weaponHolder = GetComponent<WeaponHolder> ();
 	}
 
-	public void TakeDamage(int damage){
+	public void TakeDamage (int damage)
+	{
 		health -= damage;
 		UI.SetHealthText (health);
 
 		if (health <= 0) {
-			GetComponent<AudioSource> ().PlayOneShot(playerDeath);
+			GetComponent<AudioSource> ().PlayOneShot (playerDeath);
 			isDead = true;
-			//playerAnimator.Play ("Die");
-			//playerAnimator.Play ("Die", 0, 1.0f);
 			StartCoroutine ("PlayerDie");
-			//gameController.GameOver ();
 		}
 	}
 
-	IEnumerator PlayerDie() {
-		yield return new WaitForSeconds(0.0f);
-		gameController.GameOver();
+	IEnumerator PlayerDie ()
+	{
+		yield return new WaitForSeconds (0.0f);
+		gameController.GameOver ();
 	}
-	public bool playerIsDead(){
+
+	public bool playerIsDead ()
+	{
 		return isDead;
 	}
 
-	private void pickUpHealth(){
+	private void pickUpHealth ()
+	{
 		if (health + 30 > 150) {
 			health = 150;
 		} else {
@@ -59,19 +63,23 @@ public class Player : MonoBehaviour {
 
 	}
 
-	private void pickUpPistolAmmo(){
+	private void pickUpPistolAmmo ()
+	{
 		ammo.AddAmmo (Constants.Pistol, 10);
 	}
 
-	private void pickUpAk47Ammo(){
+	private void pickUpAk47Ammo ()
+	{
 		ammo.AddAmmo (Constants.Ak47, 30);
 	}
 
-	private void pickUpGatlingGunAmmo(){
+	private void pickUpGatlingGunAmmo ()
+	{
 		ammo.AddAmmo (Constants.GatlingGun, 50);
 	}
 
-	public void PickUp(string pickUpName){
+	public void PickUp (string pickUpName)
+	{
 		switch (pickUpName) {
 		case "PistolAmmo":
 			GetComponent<AudioSource> ().PlayOneShot (pickUpPickedUp);
@@ -102,7 +110,8 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	void OnTriggerEnter(Collider other){
+	void OnTriggerEnter (Collider other)
+	{
 		if (other.gameObject.tag == "Door") {
 			startDoorAnimator.Play ("DoorOpening");
 		}
@@ -111,7 +120,7 @@ public class Player : MonoBehaviour {
 		}
 		if (other.gameObject.tag == "TrapDoor" && amountOfKeys == 3) {
 			trapDoorAnimator.Play ("TrapDoorAnimation");
-			GetComponent<AudioSource> ().PlayOneShot(trapDoorOpening);
+			GetComponent<AudioSource> ().PlayOneShot (trapDoorOpening);
 		}
 		if (other.gameObject.tag == "TreasureChest") {
 			gameController.Win ();

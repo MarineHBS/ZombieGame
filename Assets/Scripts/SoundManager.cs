@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour {
+public class SoundManager : MonoBehaviour
+{
 
 	public static SoundManager Instance = null;
 	private AudioSource soundEffects;
@@ -21,7 +22,8 @@ public class SoundManager : MonoBehaviour {
 
 
 
-	void Start () {
+	void Start ()
+	{
 		if (Instance == null) {				//Singleton code design pattern, only one copy can exist of this
 			Instance = this;
 		} else if (Instance != this) {
@@ -38,7 +40,8 @@ public class SoundManager : MonoBehaviour {
 
 	}
 
-	public void PlayOneShot(AudioClip clip){
+	public void PlayOneShot (AudioClip clip)
+	{
 		soundEffects.PlayOneShot (clip);
 	}
 }

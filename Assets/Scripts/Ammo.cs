@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ammo : MonoBehaviour {
+public class Ammo : MonoBehaviour
+{
 
 	public GameUI UI;
 
@@ -17,7 +18,8 @@ public class Ammo : MonoBehaviour {
 
 	public Dictionary<string, int> tagToAmmo;
 
-	void Awake(){
+	void Awake ()
+	{
 		tagToAmmo = new Dictionary<string, int> {
 			{ Constants.Pistol, pistolAmmo },
 			{ Constants.Ak47, ak47Ammo },
@@ -25,28 +27,32 @@ public class Ammo : MonoBehaviour {
 		};
 	}
 
-	public void AddAmmo(string tag, int ammo){
+	public void AddAmmo (string tag, int ammo)
+	{
 		if (!tagToAmmo.ContainsKey (tag)) {
 			Debug.LogError ("No such gun" + tag);
 		}
 		tagToAmmo [tag] += ammo;
 	}
 
-	public bool HasAmmo(string tag){
+	public bool HasAmmo (string tag)
+	{
 		if (!tagToAmmo.ContainsKey (tag)) {
 			Debug.LogError ("No such gun" + tag);
 		}
 		return tagToAmmo [tag] > 0;
 	}
 
-	public int GetAmmo(string tag){
+	public int GetAmmo (string tag)
+	{
 		if (!tagToAmmo.ContainsKey (tag)) {
 			Debug.LogError ("No such gun" + tag);
 		}
 		return tagToAmmo [tag];
 	}
 
-	public void ConsumeAmmo(string tag){
+	public void ConsumeAmmo (string tag)
+	{
 		if (!tagToAmmo.ContainsKey (tag)) {
 			Debug.LogError ("No such gun" + tag);
 		}

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IKControl : MonoBehaviour {
+public class IKControl : MonoBehaviour
+{
 
 	protected Animator animator;
 
@@ -14,20 +15,21 @@ public class IKControl : MonoBehaviour {
 
 	WeaponHolder wp;
 
-	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 		animator = GetComponent<Animator> ();
 		wp = GameObject.FindGameObjectWithTag ("Player").GetComponent<WeaponHolder> ();
 	}
 
-	void OnAnimatorIK(){
+	void OnAnimatorIK ()
+	{
 		animator.SetIKPositionWeight (AvatarIKGoal.RightHand, 1);
 		animator.SetIKRotationWeight (AvatarIKGoal.RightHand, 1);
 
 		animator.SetIKPositionWeight (AvatarIKGoal.LeftHand, 1);
 		animator.SetIKRotationWeight (AvatarIKGoal.LeftHand, 1);
 
-		switch(wp.GetActiveWeaponConstraint()){
+		switch (wp.GetActiveWeaponConstraint ()) {
 		case "Pistol":
 			animator.SetIKPosition (AvatarIKGoal.RightHand, rightLookObj [0].position);
 			animator.SetIKRotation (AvatarIKGoal.RightHand, rightLookObj [0].rotation);

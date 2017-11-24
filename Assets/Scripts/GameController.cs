@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
 
 	public bool isPaused;
 	public bool isGameOver;
@@ -14,20 +15,22 @@ public class GameController : MonoBehaviour {
 	public Transform winUI;
 	public bool isGameWon;
 
-	void Start () {
+	void Start ()
+	{
 		isPaused = false;
 		isGameOver = false;
 		isGameWon = false;
 	}
 
-	void Update () {
+	void Update ()
+	{
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			isPaused = !isPaused;
 		}
 		if (isGameWon) {
 			Time.timeScale = 0;
 			winUI.gameObject.SetActive (true);
-			GameChanged(false);
+			GameChanged (false);
 		}
 		if (isPaused && !isGameOver) {
 			Time.timeScale = 0;
@@ -45,7 +48,8 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	void GameChanged(bool started){
+	void GameChanged (bool started)
+	{
 		if (started) {
 			Time.timeScale = 1;
 			player.GetComponent<FirstPersonController> ().enabled = true;
@@ -54,7 +58,7 @@ public class GameController : MonoBehaviour {
 			Cursor.visible = false;
 			Cursor.lockState = CursorLockMode.Locked;
 
-		}else if(!started){
+		} else if (!started) {
 			Time.timeScale = 0;
 			player.GetComponent<FirstPersonController> ().enabled = false;
 			player.GetComponent<CharacterController> ().enabled = false;
@@ -65,12 +69,14 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public void Restart(){
+	public void Restart ()
+	{
 		SceneManager.LoadScene ("GamePlay");
 		gameOverUI.gameObject.SetActive (false);
 	}
 
-	void gameChange(string state){
+	void gameChange (string state)
+	{
 		if (state == "Paused") {
 
 		} else if (state == "Game Over") {
@@ -80,24 +86,29 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	public void Win(){
+	public void Win ()
+	{
 		isGameWon = true;
 	}
 
-	public void Resume(){
+	public void Resume ()
+	{
 		Time.timeScale = 1;
 		isPaused = false;
 	}
 
-	public void GameOver(){
+	public void GameOver ()
+	{
 		isGameOver = true;
 	}
 
-	public void Quit(){
+	public void Quit ()
+	{
 		Application.Quit ();
 	}
 
-	public void QuitToMainMenu(){
+	public void QuitToMainMenu ()
+	{
 		SceneManager.LoadScene ("MainMenu");
 	}
 }

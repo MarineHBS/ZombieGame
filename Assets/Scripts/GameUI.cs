@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameUI : MonoBehaviour {
+public class GameUI : MonoBehaviour
+{
 
 	[SerializeField]
 	private Text healthText;
@@ -14,23 +15,23 @@ public class GameUI : MonoBehaviour {
 
 	public Player player;
 
-	void Start () {
+	void Start ()
+	{
 		SetHealthText (player.health);
-		//SetAmmoText (player.ammo.GetAmmo(tag));
 	}
 
-	public void SetHealthText(int health){
+	public void SetHealthText (int health)
+	{
 		healthText.text = "" + health;
 	}
 
-	public void SetAmmoText(int ammo){
+	public void SetAmmoText (int ammo)
+	{
 		ammoText.text = ammo + "";
 	}
-	public void SetKeyText(int amountOfKeys){
-		keyText.text = amountOfKeys + "";
-	}
 
-	void Update () {
-		
+	public void SetKeyText (int amountOfKeys)
+	{
+		keyText.text = amountOfKeys + "";
 	}
 }

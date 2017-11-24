@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gun : MonoBehaviour {
+public class Gun : MonoBehaviour
+{
 
 	public float rateOfFire;
 	protected float lastTimeFired;
@@ -12,16 +13,20 @@ public class Gun : MonoBehaviour {
 	public int damage;
 	public GameObject[] bulletHoles;
 
-	void Start () {
+	void Start ()
+	{
 		lastTimeFired = Time.time - 5;	//Optional, if u want to fire instantly when the game starts
 	}
-		
-	protected virtual void Update (){}	//These methods are overriden
+	//This method is overriden
+	protected virtual void Update ()
+	{
+	}
 
-	//Vector3 forward = gameObject.transform.TransformDirection(Vector3.forward);
+
 	RaycastHit hit;
 
-	private void processHit(GameObject hitObject){
+	private void processHit (GameObject hitObject)
+	{
 		if (hitObject.GetComponentInParent<Zombie> () != null || hitObject.tag == "Zombie") {
 			hitObject.GetComponentInParent<Zombie> ().TakeDamage (damage);
 			hitObject.GetComponentInParent<Zombie> ().setShotPosition (transform);
@@ -29,7 +34,8 @@ public class Gun : MonoBehaviour {
 	}
 
 
-	protected void Fire(){
+	protected void Fire ()
+	{
 		if (Time.timeScale == 1) {				//If returning from pause menu, don't shoot once, only after clicking on resume
 			if (ammo.HasAmmo (tag)) {
 				GetComponent<AudioSource> ().PlayOneShot (fire);

@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestroyBulletHole : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
+public class DestroyBulletHole : MonoBehaviour
+{
+	void Start ()
+	{
 		Destroy (gameObject, 5);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
 	}
 }

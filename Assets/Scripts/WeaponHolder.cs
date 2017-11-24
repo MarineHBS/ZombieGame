@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponHolder : MonoBehaviour {
+public class WeaponHolder : MonoBehaviour
+{
 
 	public static string chosenWeaponConstraint;
 
@@ -16,11 +17,14 @@ public class WeaponHolder : MonoBehaviour {
 	Ammo ammo;
 
 
-	void Start () {
+	void Start ()
+	{
 		chosenWeaponConstraint = Constants.Pistol;
 		chosenWeapon = pistol;
 	}
-	private void loadWeapon(GameObject weapon){
+
+	private void loadWeapon (GameObject weapon)
+	{
 		pistol.SetActive (false);
 		ak47.SetActive (false);
 		gatlingGun.SetActive (false);
@@ -30,23 +34,26 @@ public class WeaponHolder : MonoBehaviour {
 		UI.SetAmmoText (ammo.GetAmmo (chosenWeapon.tag));	//Get the chosen weapons tag, then change ammo text according to the weapon type
 	}
 
-	public GameObject GetActiveWeapon(){
+	public GameObject GetActiveWeapon ()
+	{
 		return chosenWeapon;
 	}
 
-	public string GetActiveWeaponConstraint(){
+	public string GetActiveWeaponConstraint ()
+	{
 		return chosenWeaponConstraint;
 	}
 
 
-	void Update () {
+	void Update ()
+	{
 		if (Input.GetKeyDown ("1")) {
 			loadWeapon (pistol);
 			chosenWeaponConstraint = Constants.Pistol;
-		}else if (Input.GetKeyDown ("2")) {
+		} else if (Input.GetKeyDown ("2")) {
 			loadWeapon (ak47);
 			chosenWeaponConstraint = Constants.Ak47;
-		}else if (Input.GetKeyDown ("3")) {
+		} else if (Input.GetKeyDown ("3")) {
 			loadWeapon (gatlingGun);
 			chosenWeaponConstraint = Constants.GatlingGun;
 		}
